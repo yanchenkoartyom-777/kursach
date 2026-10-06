@@ -1,0 +1,50 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0"><i class="bi bi-person-circle"></i> Профиль пользователя</h4>
+            </div>
+            <div class="card-body">
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Email:</div>
+                    <div class="col-md-8">{{.User.Email}}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Имя:</div>
+                    <div class="col-md-8">{{.User.FirstName}}</div>
+                </div>
+                <div class="row mb-3">
+                    <div class="col-md-4 fw-bold">Роль:</div>
+                    <div class="col-md-8">
+                        {{if eq .User.Role "admin"}}
+                        <span class="badge bg-danger">Администратор</span>
+                        {{else}}
+                        <span class="badge bg-primary">Клиент</span>
+                        {{end}}
+                    </div>
+                </div>
+                <hr>
+                <div class="d-grid gap-2">
+                    <a href="/orders/history" class="btn btn-outline-primary">
+                        <i class="bi bi-clock-history"></i> История заказов
+                    </a>
+                    <a href="/cart" class="btn btn-outline-success">
+                        <i class="bi bi-cart"></i> Корзина
+                    </a>
+                    {{if eq .User.Role "admin"}}
+                    <a href="/admin/dashboard" class="btn btn-outline-danger">
+                        <i class="bi bi-speedometer2"></i> Админ-панель
+                    </a>
+                    {{end}}
+                    <a href="/logout" class="btn btn-outline-secondary">
+                        <i class="bi bi-box-arrow-right"></i> Выйти
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}

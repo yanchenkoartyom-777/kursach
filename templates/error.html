@@ -1,0 +1,10 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="text-center py-5">
+    <i class="bi bi-exclamation-triangle-fill text-danger" style="font-size: 5rem;"></i>
+    <h1 class="mt-4">Ошибка</h1>
+    <p class="lead">{{.Error}}</p>
+    <a href="/" class="btn btn-primary mt-3">На главную</a>
+</div>
+{{end}}

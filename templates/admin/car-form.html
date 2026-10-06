@@ -1,0 +1,165 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="row">
+    <div class="col-md-8 offset-md-2">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h4 class="mb-0">
+                    {{if eq .Action "create"}}
+                    <i class="bi bi-plus-circle"></i> Добавить автомобиль
+                    {{else}}
+                    <i class="bi bi-pencil"></i> Редактировать автомобиль
+                    {{end}}
+                </h4>
+            </div>
+            <div class="card-body">
+                <form id="carForm" onsubmit="saveCar(event)">
+                    <div class="row">
+                        <div class="col-md-6 mb-3">
+                            <label for="make" class="form-label">Марка *</label>
+                            <input type="text" class="form-control" id="make" name="make" 
+                                   value="{{if .Car}}{{.Car.Make}}{{end}}" required>
+                        </div>
+                        <div class="col-md-6 mb-3">
+                            <label for="model" class="form-label">Модель *</label>
+                            <input type="text" class="form-control" id="model" name="model" 
+                                   value="{{if .Car}}{{.Car.Model}}{{end}}" required>
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="year" class="form-label">Год *</label>
+                            <input type="number" class="form-control" id="year" name="year" 
+                                   value="{{if .Car}}{{.Car.Year}}{{else}}2024{{end}}" 
+                                   min="1900" max="2100" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="price" class="form-label">Цена ($) *</label>
+                            <input type="number" class="form-control" id="price" name="price" 
+                                   value="{{if .Car}}{{.Car.Price}}{{end}}" 
+                                   step="0.01" min="0" required>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="mileage" class="form-label">Пробег (км)</label>
+                            <input type="number" class="form-control" id="mileage" name="mileage" 
+                                   value="{{if .Car}}{{.Car.Mileage}}{{else}}0{{end}}" min="0">
+                        </div>
+                    </div>
+
+                    <div class="row">
+                        <div class="col-md-4 mb-3">
+                            <label for="color" class="form-label">Цвет</label>
+                            <input type="text" class="form-control" id="color" name="color" 
+                                   value="{{if .Car}}{{.Car.Color}}{{end}}">
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="engine_type" class="form-label">Тип двигателя</label>
+                            <select class="form-select" id="engine_type" name="engine_type">
+                                <option value="">Выберите...</option>
+                                <option value="Gasoline" {{if .Car}}{{if eq .Car.EngineType "Gasoline"}}selected{{end}}{{end}}>Бензин</option>
+                                <option value="Diesel" {{if .Car}}{{if eq .Car.EngineType "Diesel"}}selected{{end}}{{end}}>Дизель</option>
+                                <option value="Electric" {{if .Car}}{{if eq .Car.EngineType "Electric"}}selected{{end}}{{end}}>Электро</option>
+                                <option value="Hybrid" {{if .Car}}{{if eq .Car.EngineType "Hybrid"}}selected{{end}}{{end}}>Гибрид</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4 mb-3">
+                            <label for="transmission" class="form-label">Коробка передач</label>
+                            <select class="form-select" id="transmission" name="transmission">
+                                <option value="">Выберите...</option>
+                                <option value="Manual" {{if .Car}}{{if eq .Car.Transmission "Manual"}}selected{{end}}{{end}}>Механика</option>
+                                <option value="Automatic" {{if .Car}}{{if eq .Car.Transmission "Automatic"}}selected{{end}}{{end}}>Автомат</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="image_url" class="form-label">URL изображения</label>
+                        <input type="url" class="form-control" id="image_url" name="image_url" 
+                               value="{{if .Car}}{{if .Car.ImageURL}}{{.Car.ImageURL}}{{end}}{{end}}" 
+                               placeholder="https://example.com/image.jpg">
+                        <div class="form-text">Введите URL изображения автомобиля</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Описание</label>
+                        <textarea class="form-control" id="description" name="description" 
+                                  rows="4">{{if .Car}}{{.Car.Description}}{{end}}</textarea>
+                    </div>
+
+                    {{if eq .Action "edit"}}
+                    <div class="mb-3">
+                        <div class="form-check">
+                            <input class="form-check-input" type="checkbox" id="is_available" name="is_available" 
+                                   {{if .Car.IsAvailable}}checked{{end}}>
+                            <label class="form-check-label" for="is_available">
+                                Доступен для продажи
+                            </label>
+                        </div>
+                    </div>
+                    {{end}}
+
+                    <div class="d-flex gap-2">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Сохранить
+                        </button>
+                        <a href="/cars" class="btn btn-secondary">
+                            <i class="bi bi-x-circle"></i> Отмена
+                        </a>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+function saveCar(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    // Convert FormData to JSON
+    const data = {};
+    formData.forEach((value, key) => {
+        if (key === 'is_available') {
+            data[key] = form.querySelector('#is_available').checked;
+        } else if (key === 'year' || key === 'mileage') {
+            data[key] = parseInt(value) || 0;
+        } else if (key === 'price') {
+            data[key] = parseFloat(value) || 0;
+        } else {
+            data[key] = value;
+        }
+    });
+    
+    const action = '{{.Action}}';
+    const url = action === 'create' ? '/admin/cars/create' : '/admin/cars/{{if .Car}}{{.Car.ID}}{{end}}/update';
+    const method = 'POST';
+    
+    fetch(url, {
+        method: method,
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            setTimeout(() => {
+                window.location.href = '/cars';
+            }, 1500);
+        } else {
+            showNotification(data.error || 'Ошибка сохранения', 'danger');
+        }
+    })
+    .catch(error => {
+        showNotification('Ошибка сети', 'danger');
+    });
+}
+</script>
+{{end}}

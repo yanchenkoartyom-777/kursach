@@ -1,0 +1,32 @@
+server:
+  port: 8080
+  host: "0.0.0.0"
+  templates_path: "./templates"
+  static_path: "./static"
+
+session:
+  secret: "change-this-to-random-32-byte-string"
+  max_age: 86400  # 24 hours in seconds
+
+database:
+  host: "localhost"
+  port: 5432
+  user: "postgres"
+  password: "postgres"
+  dbname: "car_dealership"
+  sslmode: "disable"
+
+email:
+  smtp_host: "smtp.gmail.com"
+  smtp_port: 587
+  from_email: "your-email@gmail.com"
+  app_password: "your-google-app-password"
+
+two_factor:
+  enabled: true  # Set to false to disable 2FA for faster development
+  code_length: 6
+  code_expiration: "10m"  # 10 minutes
+
+logging:
+  level: "info"  # debug, info, warn, error
+  format: "json"  # json or text

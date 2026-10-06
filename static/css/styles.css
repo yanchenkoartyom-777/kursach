@@ -1,0 +1,90 @@
+/* Custom styles for Car Dealership System */
+
+:root {
+    --primary-color: #2c3e50;
+    --secondary-color: #3498db;
+    --success-color: #27ae60;
+    --danger-color: #e74c3c;
+    --warning-color: #f39c12;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+}
+
+.navbar-brand {
+    font-weight: bold;
+    color: var(--primary-color) !important;
+}
+
+.card {
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.btn-primary {
+    background-color: var(--secondary-color);
+    border-color: var(--secondary-color);
+}
+
+.btn-primary:hover {
+    background-color: #2980b9;
+    border-color: #2980b9;
+}
+
+.car-card {
+    margin-bottom: 20px;
+}
+
+.car-image {
+    height: 200px;
+    object-fit: cover;
+}
+
+.price-tag {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: var(--success-color);
+}
+
+.alert {
+    border-radius: 8px;
+}
+
+footer {
+    margin-top: 50px;
+    padding: 20px 0;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.verification-code-input {
+    font-size: 2rem;
+    text-align: center;
+    letter-spacing: 1rem;
+}
+
+.admin-sidebar {
+    background-color: var(--primary-color);
+    min-height: 100vh;
+    color: white;
+}
+
+.admin-sidebar a {
+    color: white;
+    text-decoration: none;
+}
+
+.admin-sidebar a:hover {
+    background-color: rgba(255,255,255,0.1);
+}
+
+.stat-card {
+    border-left: 4px solid var(--secondary-color);
+}

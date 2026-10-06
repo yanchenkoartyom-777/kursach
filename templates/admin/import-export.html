@@ -1,0 +1,171 @@
+{{template "admin" .}}
+
+{{define "content"}}
+<h1 class="mb-4">Импорт / Экспорт данных</h1>
+
+<div class="row">
+    <!-- Export Section -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-success text-white">
+                <h5 class="mb-0"><i class="bi bi-download"></i> Экспорт данных</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Экспортируйте данные об автомобилях в различных форматах</p>
+
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-success" onclick="exportData('json')">
+                        <i class="bi bi-filetype-json"></i> Экспорт в JSON
+                    </button>
+                    <button class="btn btn-outline-success" onclick="exportData('xml')">
+                        <i class="bi bi-filetype-xml"></i> Экспорт в XML
+                    </button>
+                    <button class="btn btn-outline-success" onclick="exportData('csv')">
+                        <i class="bi bi-filetype-csv"></i> Экспорт в CSV
+                    </button>
+                </div>
+
+                <hr>
+
+                <h6>Отчёты</h6>
+                <div class="d-grid gap-2">
+                    <button class="btn btn-outline-danger" onclick="exportReport('pdf')">
+                        <i class="bi bi-file-earmark-pdf"></i> Отчёт PDF
+                    </button>
+                    <button class="btn btn-outline-primary" onclick="exportReport('excel')">
+                        <i class="bi bi-file-earmark-excel"></i> Отчёт Excel
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Import Section -->
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header bg-primary text-white">
+                <h5 class="mb-0"><i class="bi bi-upload"></i> Импорт данных</h5>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Импортируйте данные об автомобилях из файла</p>
+
+                <form id="importForm" enctype="multipart/form-data">
+                    <div class="mb-3">
+                        <label for="importFile" class="form-label">Выберите файл</label>
+                        <input type="file" class="form-control" id="importFile" name="file" accept=".json,.xml,.csv"
+                            required>
+                        <div class="form-text">Поддерживаемые форматы: JSON, XML, CSV</div>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="importFormat" class="form-label">Формат файла</label>
+                        <select class="form-select" id="importFormat" name="format" required>
+                            <option value="">Выберите формат...</option>
+                            <option value="json">JSON</option>
+                            <option value="xml">XML</option>
+                            <option value="csv">CSV</option>
+                        </select>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary w-100">
+                        <i class="bi bi-upload"></i> Импортировать
+                    </button>
+                </form>
+
+                <div id="importResult" class="mt-3"></div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Import/Export Statistics -->
+<div class="row mt-4">
+    <div class="col-md-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-info-circle"></i> Информация</h5>
+            </div>
+            <div class="card-body">
+                <div class="row">
+                    <div class="col-md-4">
+                        <h6>Формат JSON</h6>
+                        <p class="small text-muted">
+                            Универсальный формат для обмена данными.
+                            Содержит полную информацию о каждом автомобиле.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Формат XML</h6>
+                        <p class="small text-muted">
+                            Структурированный формат для интеграции с другими системами.
+                            Поддерживает иерархическую структуру данных.
+                        </p>
+                    </div>
+                    <div class="col-md-4">
+                        <h6>Формат CSV</h6>
+                        <p class="small text-muted">
+                            Табличный формат для работы в Excel и других программах.
+                            Простой и компактный.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    function exportData(format) {
+        showNotification('Экспорт начат...', 'info');
+        window.location.href = `/admin/export/cars?format=${format}`;
+    }
+
+    function exportReport(format) {
+        showNotification('Генерация отчёта...', 'info');
+        window.location.href = `/admin/reports/cars?format=${format}`;
+    }
+
+    document.getElementById('importForm').addEventListener('submit', function (e) {
+        e.preventDefault();
+
+        const formData = new FormData(this);
+        const format = document.getElementById('importFormat').value;
+
+        document.getElementById('importResult').innerHTML = `
+        <div class="alert alert-info">
+            <i class="bi bi-hourglass-split"></i> Импорт данных...
+        </div>
+    `;
+
+        fetch(`/admin/import/cars?format=${format}`, {
+            method: 'POST',
+            body: formData
+        })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    document.getElementById('importResult').innerHTML = `
+                <div class="alert alert-success">
+                    <i class="bi bi-check-circle"></i> ${data.message}
+                    <br><small>Импортировано: ${data.imported} автомобилей</small>
+                </div>
+            `;
+                    setTimeout(() => location.reload(), 2000);
+                } else {
+                    document.getElementById('importResult').innerHTML = `
+                <div class="alert alert-danger">
+                    <i class="bi bi-x-circle"></i> ${data.error}
+                </div>
+            `;
+                }
+            })
+            .catch(error => {
+                document.getElementById('importResult').innerHTML = `
+            <div class="alert alert-danger">
+                <i class="bi bi-x-circle"></i> Ошибка импорта
+            </div>
+        `;
+            });
+    });
+</script>
+{{end}}

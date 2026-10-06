@@ -1,0 +1,137 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h1 class="mb-0">Каталог автомобилей</h1>
+    {{if .User}}
+    {{if eq .User.Role "admin"}}
+    <a href="/admin/cars/create" class="btn btn-success">
+        <i class="bi bi-plus-circle"></i> Добавить автомобиль
+    </a>
+    {{end}}
+    {{end}}
+</div>
+
+<div class="row mb-4">
+    <div class="col-md-12">
+        <form method="GET" action="/cars" class="row g-3">
+            <div class="col-md-3">
+                <input type="text" class="form-control" name="search" placeholder="Поиск..." value="{{.Search}}">
+            </div>
+            <div class="col-md-2">
+                <select class="form-select" name="sort" onchange="this.form.submit()">
+                    <option value="">Сортировка</option>
+                    <option value="price_asc" {{if eq .Sort "price_asc"}}selected{{end}}>Цена: по возрастанию</option>
+                    <option value="price_desc" {{if eq .Sort "price_desc"}}selected{{end}}>Цена: по убыванию</option>
+                    <option value="year_desc" {{if eq .Sort "year_desc"}}selected{{end}}>Год: новые</option>
+                    <option value="year_asc" {{if eq .Sort "year_asc"}}selected{{end}}>Год: старые</option>
+                </select>
+            </div>
+            <div class="col-md-2">
+                <button type="submit" class="btn btn-primary w-100">Применить</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div class="row">
+    {{range .Cars}}
+    <div class="col-md-4 mb-4">
+        <div class="card car-card h-100">
+            {{if .ImageURL}}
+            <img src="{{.ImageURL}}" class="card-img-top car-image" alt="{{.Make}} {{.Model}}">
+            {{else}}
+            <img src="/static/images/car-placeholder.jpg" class="card-img-top car-image" alt="{{.Make}} {{.Model}}">
+            {{end}}
+            <div class="card-body">
+                <h5 class="card-title">{{.Make}} {{.Model}}</h5>
+                <p class="card-text text-muted">{{.Year}} • {{.Transmission}}</p>
+                <p class="price-tag">${{printf "%.2f" .Price}}</p>
+                
+                {{if not .IsAvailable}}
+                <span class="badge bg-danger mb-2">Недоступен</span>
+                {{end}}
+                
+                <div class="d-grid gap-2">
+                    <a href="/cars/{{.ID}}" class="btn btn-outline-primary">Подробнее</a>
+                    
+                    {{if $.User}}
+                    {{if eq $.User.Role "admin"}}
+                    <!-- Admin controls -->
+                    <div class="btn-group" role="group">
+                        <a href="/admin/cars/{{.ID}}/edit" class="btn btn-warning btn-sm">
+                            <i class="bi bi-pencil"></i> Редактировать
+                        </a>
+                        <button onclick="toggleAvailability({{.ID}})" class="btn btn-info btn-sm">
+                            <i class="bi bi-toggle-on"></i> {{if .IsAvailable}}Скрыть{{else}}Показать{{end}}
+                        </button>
+                        <button onclick="deleteCar({{.ID}})" class="btn btn-danger btn-sm">
+                            <i class="bi bi-trash"></i> Удалить
+                        </button>
+                    </div>
+                    {{else}}
+                    <!-- Client controls -->
+                    {{if .IsAvailable}}
+                    <button onclick="addToCart({{.ID}})" class="btn btn-primary">
+                        <i class="bi bi-cart-plus"></i> В корзину
+                    </button>
+                    {{end}}
+                    {{end}}
+                    {{end}}
+                </div>
+            </div>
+        </div>
+    </div>
+    {{else}}
+    <div class="col-12">
+        <div class="alert alert-info">Автомобили не найдены</div>
+    </div>
+    {{end}}
+</div>
+
+<script>
+function toggleAvailability(carId) {
+    if (!confirm('Изменить статус доступности автомобиля?')) {
+        return;
+    }
+    
+    fetch(`/admin/cars/${carId}/toggle`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showNotification(data.error || 'Ошибка изменения статуса', 'danger');
+        }
+    })
+    .catch(error => {
+        showNotification('Ошибка сети', 'danger');
+    });
+}
+
+function deleteCar(carId) {
+    if (!confirm('Вы уверены, что хотите удалить этот автомобиль? Это действие нельзя отменить.')) {
+        return;
+    }
+    
+    fetch(`/admin/cars/${carId}/delete`, {
+        method: 'POST'
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification(data.message, 'success');
+            setTimeout(() => location.reload(), 1000);
+        } else {
+            showNotification(data.error || 'Ошибка удаления', 'danger');
+        }
+    })
+    .catch(error => {
+        showNotification('Ошибка сети', 'danger');
+    });
+}
+</script>
+{{end}}

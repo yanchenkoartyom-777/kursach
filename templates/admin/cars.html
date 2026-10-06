@@ -1,0 +1,40 @@
+{{template "admin" .}}
+
+{{define "content"}}
+<div class="d-flex justify-content-between mb-4">
+    <h1>Управление автомобилями</h1>
+    <a href="/admin/cars/new" class="btn btn-primary">Добавить автомобиль</a>
+</div>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+            <th>Марка</th>
+            <th>Модель</th>
+            <th>Год</th>
+            <th>Цена</th>
+            <th>Доступен</th>
+            <th>Действия</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{range .Cars}}
+        <tr>
+            <td>{{.ID}}</td>
+            <td>{{.Make}}</td>
+            <td>{{.Model}}</td>
+            <td>{{.Year}}</td>
+            <td>${{printf "%.2f" .Price}}</td>
+            <td>{{if .IsAvailable}}Да{{else}}Нет{{end}}</td>
+            <td>
+                <a href="/admin/cars/{{.ID}}/edit" class="btn btn-sm btn-warning">Изменить</a>
+                <form method="POST" action="/admin/cars/{{.ID}}/delete" style="display:inline;">
+                    <button type="submit" class="btn btn-sm btn-danger" data-confirm="Удалить автомобиль?">Удалить</button>
+                </form>
+            </td>
+        </tr>
+        {{end}}
+    </tbody>
+</table>
+{{end}}

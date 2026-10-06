@@ -1,0 +1,99 @@
+{{template "base" .}}
+
+{{define "content"}}
+<div class="row">
+    <div class="col-md-6">
+        {{if .Car.ImageURL}}
+        <img src="{{.Car.ImageURL}}" class="img-fluid rounded" alt="{{.Car.Make}} {{.Car.Model}}" id="carImage">
+        {{else}}
+        <img src="/static/images/car-placeholder.jpg" class="img-fluid rounded" alt="{{.Car.Make}} {{.Car.Model}}" id="carImage">
+        {{end}}
+        
+        {{if .User}}
+        {{if eq .User.Role "admin"}}
+        <div class="card mt-3">
+            <div class="card-header bg-warning">
+                <i class="bi bi-image"></i> Управление изображением (Админ)
+            </div>
+            <div class="card-body">
+                <form id="imageForm" onsubmit="updateImage(event)">
+                    <input type="hidden" name="car_id" value="{{.Car.ID}}">
+                    <div class="mb-3">
+                        <label for="imageUrl" class="form-label">URL изображения:</label>
+                        <input type="url" class="form-control" id="imageUrl" name="image_url" 
+                               value="{{if .Car.ImageURL}}{{.Car.ImageURL}}{{end}}" 
+                               placeholder="https://example.com/image.jpg">
+                        <div class="form-text">Введите URL изображения или оставьте пустым для удаления</div>
+                    </div>
+                    <button type="submit" class="btn btn-warning w-100">
+                        <i class="bi bi-save"></i> Обновить изображение
+                    </button>
+                </form>
+            </div>
+        </div>
+        {{end}}
+        {{end}}
+    </div>
+    <div class="col-md-6">
+        <h1>{{.Car.Make}} {{.Car.Model}}</h1>
+        <h2 class="price-tag">${{printf "%.2f" .Car.Price}}</h2>
+        
+        <table class="table">
+            <tr><th>Год:</th><td>{{.Car.Year}}</td></tr>
+            <tr><th>Цвет:</th><td>{{.Car.Color}}</td></tr>
+            <tr><th>Двигатель:</th><td>{{.Car.EngineType}}</td></tr>
+            <tr><th>Коробка:</th><td>{{.Car.Transmission}}</td></tr>
+            <tr><th>Пробег:</th><td>{{.Car.Mileage}} км</td></tr>
+        </table>
+
+        <p>{{.Car.Description}}</p>
+
+        {{if .User}}
+        {{if ne .User.Role "admin"}}
+        <div class="d-grid gap-2">
+            <button onclick="addToCart({{.Car.ID}})" class="btn btn-primary btn-lg">
+                <i class="bi bi-cart-plus"></i> Добавить в корзину
+            </button>
+        </div>
+        {{end}}
+        {{else}}
+        <div class="alert alert-info">
+            <a href="/login">Войдите</a>, чтобы добавить в корзину
+        </div>
+        {{end}}
+    </div>
+</div>
+
+<script>
+function updateImage(event) {
+    event.preventDefault();
+    
+    const form = event.target;
+    const formData = new FormData(form);
+    
+    fetch('/admin/cars/update-image', {
+        method: 'POST',
+        body: new URLSearchParams(formData)
+    })
+    .then(response => response.json())
+    .then(data => {
+        if (data.success) {
+            showNotification('Изображение обновлено успешно', 'success');
+            // Update image preview
+            const imageUrl = document.getElementById('imageUrl').value;
+            const carImage = document.getElementById('carImage');
+            if (imageUrl) {
+                carImage.src = imageUrl;
+            } else {
+                carImage.src = '/static/images/car-placeholder.jpg';
+            }
+        } else {
+            showNotification(data.error || 'Ошибка обновления изображения', 'danger');
+        }
+    })
+    .catch(error => {
+        showNotification('Ошибка сети', 'danger');
+    });
+}
+</script>
+{{end}}

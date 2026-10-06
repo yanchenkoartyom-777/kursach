@@ -1,0 +1,359 @@
+{{template "admin" .}}
+
+{{define "content"}}
+<h1 class="mb-4">Аналитика</h1>
+
+<!-- Main Statistics Cards -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card border-primary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Всего заказов</h6>
+                        <h2 class="mb-0">{{.Stats.TotalOrders}}</h2>
+                    </div>
+                    <div class="text-primary">
+                        <i class="bi bi-receipt fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card border-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Выручка</h6>
+                        <h2 class="mb-0">${{printf "%.2f" .Stats.TotalRevenue}}</h2>
+                    </div>
+                    <div class="text-success">
+                        <i class="bi bi-currency-dollar fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card border-info">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Средний чек</h6>
+                        <h2 class="mb-0">${{printf "%.2f" .Stats.AverageOrder}}</h2>
+                    </div>
+                    <div class="text-info">
+                        <i class="bi bi-graph-up-arrow fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Car Inventory Statistics -->
+<div class="row mb-4">
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card border-secondary">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Всего автомобилей</h6>
+                        <h2 class="mb-0">{{.Stats.TotalCars}}</h2>
+                    </div>
+                    <div class="text-secondary">
+                        <i class="bi bi-car-front-fill fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card border-success">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Доступно</h6>
+                        <h2 class="mb-0">{{.Stats.AvailableCars}}</h2>
+                    </div>
+                    <div class="text-success">
+                        <i class="bi bi-check-circle-fill fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-4 mb-3">
+        <div class="card stat-card border-warning">
+            <div class="card-body">
+                <div class="d-flex justify-content-between align-items-center">
+                    <div>
+                        <h6 class="text-muted mb-1">Продано</h6>
+                        <h2 class="mb-0">{{.Stats.SoldCars}}</h2>
+                    </div>
+                    <div class="text-warning">
+                        <i class="bi bi-bag-check-fill fs-1"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Order Status Breakdown -->
+<div class="row mb-4">
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-warning bg-opacity-10">
+            <div class="card-body">
+                <i class="bi bi-clock-history text-warning fs-1 mb-2"></i>
+                <h3 class="text-warning mb-1">
+                    {{if .Stats.OrdersByStatus.pending}}{{.Stats.OrdersByStatus.pending}}{{else}}0{{end}}
+                </h3>
+                <p class="text-muted mb-0">В ожидании</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-info bg-opacity-10">
+            <div class="card-body">
+                <i class="bi bi-arrow-repeat text-info fs-1 mb-2"></i>
+                <h3 class="text-info mb-1">
+                    {{if .Stats.OrdersByStatus.processing}}{{.Stats.OrdersByStatus.processing}}{{else}}0{{end}}
+                </h3>
+                <p class="text-muted mb-0">В обработке</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-success bg-opacity-10">
+            <div class="card-body">
+                <i class="bi bi-check-circle text-success fs-1 mb-2"></i>
+                <h3 class="text-success mb-1">
+                    {{if .Stats.OrdersByStatus.completed}}{{.Stats.OrdersByStatus.completed}}{{else}}0{{end}}
+                </h3>
+                <p class="text-muted mb-0">Завершено</p>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-3 mb-3">
+        <div class="card text-center bg-danger bg-opacity-10">
+            <div class="card-body">
+                <i class="bi bi-x-circle text-danger fs-1 mb-2"></i>
+                <h3 class="text-danger mb-1">
+                    {{if .Stats.OrdersByStatus.cancelled}}{{.Stats.OrdersByStatus.cancelled}}{{else}}0{{end}}
+                </h3>
+                <p class="text-muted mb-0">Отменено</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Revenue Trend Chart -->
+<div class="row mb-4">
+    <div class="col-12">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-graph-up"></i> Тренд выручки (последние 6 месяцев)</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="revenueChart" height="80"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Cars and Status Charts -->
+<div class="row">
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-trophy"></i> Топ-5 автомобилей</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="topCarsChart"></canvas>
+            </div>
+        </div>
+    </div>
+    <div class="col-md-6 mb-4">
+        <div class="card">
+            <div class="card-header">
+                <h5 class="mb-0"><i class="bi bi-pie-chart"></i> Статусы заказов</h5>
+            </div>
+            <div class="card-body">
+                <canvas id="statusChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// Prepare data from server
+const monthlyRevenue = [
+    {{range .Stats.MonthlyRevenue}}
+    {month: '{{.Month}}', revenue: {{.Revenue}}, orders: {{.Orders}}},
+    {{end}}
+];
+
+const topCars = [
+    {{range .Stats.TopCars}}
+    {name: '{{.Make}} {{.Model}}', count: {{.OrderCount}}},
+    {{end}}
+];
+
+const ordersByStatus = {
+    pending: {{if index .Stats.OrdersByStatus "pending"}}{{index .Stats.OrdersByStatus "pending"}}{{else}}0{{end}},
+    processing: {{if index .Stats.OrdersByStatus "processing"}}{{index .Stats.OrdersByStatus "processing"}}{{else}}0{{end}},
+    completed: {{if index .Stats.OrdersByStatus "completed"}}{{index .Stats.OrdersByStatus "completed"}}{{else}}0{{end}},
+    cancelled: {{if index .Stats.OrdersByStatus "cancelled"}}{{index .Stats.OrdersByStatus "cancelled"}}{{else}}0{{end}}
+};
+
+// Revenue Trend Chart
+const revenueCtx = document.getElementById('revenueChart').getContext('2d');
+new Chart(revenueCtx, {
+    type: 'line',
+    data: {
+        labels: monthlyRevenue.map(m => m.month),
+        datasets: [{
+            label: 'Выручка ($)',
+            data: monthlyRevenue.map(m => m.revenue),
+            borderColor: 'rgb(75, 192, 192)',
+            backgroundColor: 'rgba(75, 192, 192, 0.2)',
+            tension: 0.4,
+            fill: true
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: true,
+                position: 'top'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        return 'Выручка: $' + context.parsed.y.toFixed(2);
+                    }
+                }
+            }
+        },
+        scales: {
+            y: {
+                beginAtZero: true,
+                ticks: {
+                    callback: function(value) {
+                        return '$' + value.toLocaleString();
+                    }
+                }
+            }
+        }
+    }
+});
+
+// Top Cars Chart
+const topCarsCtx = document.getElementById('topCarsChart').getContext('2d');
+new Chart(topCarsCtx, {
+    type: 'bar',
+    data: {
+        labels: topCars.map(c => c.name),
+        datasets: [{
+            label: 'Количество продаж',
+            data: topCars.map(c => c.count),
+            backgroundColor: [
+                'rgba(255, 99, 132, 0.7)',
+                'rgba(54, 162, 235, 0.7)',
+                'rgba(255, 206, 86, 0.7)',
+                'rgba(75, 192, 192, 0.7)',
+                'rgba(153, 102, 255, 0.7)'
+            ],
+            borderColor: [
+                'rgba(255, 99, 132, 1)',
+                'rgba(54, 162, 235, 1)',
+                'rgba(255, 206, 86, 1)',
+                'rgba(75, 192, 192, 1)',
+                'rgba(153, 102, 255, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        indexAxis: 'y',
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                display: false
+            }
+        },
+        scales: {
+            x: {
+                beginAtZero: true,
+                ticks: {
+                    stepSize: 1
+                }
+            }
+        }
+    }
+});
+
+// Status Pie Chart
+const statusCtx = document.getElementById('statusChart').getContext('2d');
+new Chart(statusCtx, {
+    type: 'pie',
+    data: {
+        labels: ['В ожидании', 'В обработке', 'Завершено', 'Отменено'],
+        datasets: [{
+            data: [
+                ordersByStatus.pending,
+                ordersByStatus.processing,
+                ordersByStatus.completed,
+                ordersByStatus.cancelled
+            ],
+            backgroundColor: [
+                'rgba(255, 193, 7, 0.7)',
+                'rgba(13, 202, 240, 0.7)',
+                'rgba(25, 135, 84, 0.7)',
+                'rgba(220, 53, 69, 0.7)'
+            ],
+            borderColor: [
+                'rgba(255, 193, 7, 1)',
+                'rgba(13, 202, 240, 1)',
+                'rgba(25, 135, 84, 1)',
+                'rgba(220, 53, 69, 1)'
+            ],
+            borderWidth: 1
+        }]
+    },
+    options: {
+        responsive: true,
+        maintainAspectRatio: true,
+        plugins: {
+            legend: {
+                position: 'bottom'
+            },
+            tooltip: {
+                callbacks: {
+                    label: function(context) {
+                        const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                        const percentage = ((context.parsed / total) * 100).toFixed(1);
+                        return context.label + ': ' + context.parsed + ' (' + percentage + '%)';
+                    }
+                }
+            }
+        }
+    }
+});
+</script>
+
+<style>
+.stat-card {
+    transition: transform 0.2s;
+}
+.stat-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+}
+</style>
+{{end}}

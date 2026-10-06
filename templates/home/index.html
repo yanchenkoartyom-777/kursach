@@ -1,0 +1,50 @@
+{{define "content"}}
+<div class="text-center py-5">
+    <h1 class="display-4 mb-4">🚗 Добро пожаловать в Car Dealership System</h1>
+    <p class="lead mb-5">Лучшие автомобили по выгодным ценам</p>
+    
+    <div class="row justify-content-center mb-5">
+        <div class="col-md-8">
+            <div class="d-grid gap-3">
+                <a href="/cars" class="btn btn-primary btn-lg">
+                    <i class="bi bi-car-front"></i> Перейти к каталогу
+                </a>
+                {{if not .User}}
+                <div class="row">
+                    <div class="col-md-6">
+                        <a href="/login" class="btn btn-outline-primary w-100">
+                            <i class="bi bi-box-arrow-in-right"></i> Вход
+                        </a>
+                    </div>
+                    <div class="col-md-6">
+                        <a href="/register" class="btn btn-outline-secondary w-100">
+                            <i class="bi bi-person-plus"></i> Регистрация
+                        </a>
+                    </div>
+                </div>
+                {{end}}
+            </div>
+        </div>
+    </div>
+
+    <div class="row mt-5">
+        <div class="col-md-4">
+            <i class="bi bi-shield-check" style="font-size: 3rem; color: #3498db;"></i>
+            <h4 class="mt-3">Безопасность</h4>
+            <p>Двухфакторная аутентификация</p>
+        </div>
+        <div class="col-md-4">
+            <i class="bi bi-cart-check" style="font-size: 3rem; color: #27ae60;"></i>
+            <h4 class="mt-3">Удобство</h4>
+            <p>Простое оформление заказов</p>
+        </div>
+        <div class="col-md-4">
+            <i class="bi bi-star-fill" style="font-size: 3rem; color: #f39c12;"></i>
+            <h4 class="mt-3">Качество</h4>
+            <p>Только проверенные автомобили</p>
+        </div>
+    </div>
+</div>
+{{end}}
+
+{{template "base" .}}

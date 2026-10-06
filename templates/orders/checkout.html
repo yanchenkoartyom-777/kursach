@@ -1,0 +1,10 @@
+{{template "base" .}}
+{{define "content"}}
+<div class="text-center">
+    <i class="bi bi-check-circle-fill text-success" style="font-size: 5rem;"></i>
+    <h1 class="mt-3">Заказ оформлен!</h1>
+    <p>Номер заказа: #{{.Order.ID}}</p>
+    <p>Мы отправили подтверждение на ваш email</p>
+    <a href="/orders/history" class="btn btn-primary">Мои заказы</a>
+</div>
+{{end}}

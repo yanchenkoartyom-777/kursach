@@ -1,0 +1,6 @@
+{{template "base" .}}
+{{define "content"}}
+<h1>Результаты поиска: "{{.Query}}"</h1>
+<p class="text-muted">Найдено: {{len .Cars}} автомобилей</p>
+{{template "catalog" .}}
+{{end}}
